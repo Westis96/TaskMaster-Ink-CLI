@@ -1,6 +1,9 @@
-# Ink-CLI Task Manager
+# TaskMaster
+#### Ink-CLI Task Manager
 
 A beautiful and feature-rich task management application that runs directly in your terminal. Built with React Ink for a smooth, interactive terminal UI experience.
+
+![Task Master Terminal UI](assets/img_terminal.png)
 
 ## Features
 
