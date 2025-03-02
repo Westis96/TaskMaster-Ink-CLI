@@ -1,0 +1,29 @@
+{
+  "name": "ink-task-manager",
+  "version": "1.0.0",
+  "description": "A cool task manager CLI built with Ink",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "build": "tsc",
+    "dev": "tsc && node index.js"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "figures": "^5.0.0",
+    "ink": "^4.4.1",
+    "ink-big-text": "^2.0.0",
+    "ink-gradient": "^2.0.0",
+    "ink-spinner": "^5.0.0",
+    "ink-text-input": "^5.0.1",
+    "nanoid": "^5.0.1",
+    "react": "^18.2.0",
+    "zustand": "^5.0.3"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.25",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  }
+}
