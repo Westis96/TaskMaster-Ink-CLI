@@ -5,15 +5,43 @@ import Spinner from 'ink-spinner';
 interface StatusBarProps {
   tasks: Array<{
     completed: boolean;
+    updated_at: Date;
+    dueDate?: Date;
   }>;
   mode: string;
   statusMessage?: string;
 }
 
 const StatusBar = ({ tasks, mode, statusMessage }: StatusBarProps) => {
+  // Calculate the start and end of today
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Set to beginning of day
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1); // Set to beginning of tomorrow
+  
+  // Filter tasks to those due today or in the future (active tasks)
+  const activeTasks = tasks.filter(task => {
+    // Exclude tasks with no due date (consider them inactive)
+    if (!task.dueDate) return false;
+    
+    // Include tasks due today or in the future
+    return task.dueDate >= today;
+  });
+  
+  const totalActiveTasks = activeTasks.length;
   const totalTasks = tasks.length;
-  const completedTasks = tasks.filter(task => task.completed).length;
-  const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+  
+  // Count active tasks that were completed today
+  const dailyCompletedTasks = activeTasks.filter(task => {
+    return task.completed && 
+           task.updated_at >= today && 
+           task.updated_at < tomorrow;
+  }).length;
+  
+  // Count active tasks that are not completed (still pending)
+  const pendingActiveTasks = activeTasks.filter(task => !task.completed).length;
+  
+  const progress = totalActiveTasks > 0 ? Math.round((dailyCompletedTasks / totalActiveTasks) * 100) : 0;
   
   const getProgressBar = () => {
     const width = 20;
@@ -63,8 +91,8 @@ const StatusBar = ({ tasks, mode, statusMessage }: StatusBarProps) => {
                 </Text>
               ) : (
                 <Text>
-                  <Text color="cyan">{completedTasks}/{totalTasks}</Text>
-                  <Text> tasks completed</Text>
+                  <Text>Daily tasks completed: </Text>
+                  <Text color="cyan">{dailyCompletedTasks}/{totalActiveTasks}</Text>
                 </Text>
               )}
             </Text>

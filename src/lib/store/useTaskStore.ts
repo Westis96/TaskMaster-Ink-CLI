@@ -1,8 +1,18 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { nanoid } from 'nanoid';
-import { existsSync, readFileSync, writeFileSync } from 'fs';
-import { join } from 'path';
+import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+// Get the absolute path to the repository root directory
+const getRepoRoot = () => {
+  // For ESM modules, we need to use this approach to get __dirname
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
+  // Navigate up from src/lib/store to the repo root
+  return join(__dirname, '..', '..', '..');
+};
 
 export interface Task {
   id: string;
@@ -38,7 +48,7 @@ interface TaskState {
 const nodeStorage = {
   getItem: (name: string): string | null => {
     try {
-      const storagePath = join(process.cwd(), 'db', `${name}.json`);
+      const storagePath = join(getRepoRoot(), 'db', `${name}.json`);
       
       if (existsSync(storagePath)) {
         return readFileSync(storagePath, 'utf8');
@@ -51,14 +61,13 @@ const nodeStorage = {
   },
   setItem: (name: string, value: string): void => {
     try {
-      const storagePath = join(process.cwd(), 'db', `${name}.json`);
+      const storagePath = join(getRepoRoot(), 'db', `${name}.json`);
       // Ensure the db directory exists
-      import('fs').then(fs => {
-        if (!fs.existsSync(join(process.cwd(), 'db'))) {
-          fs.mkdirSync(join(process.cwd(), 'db'), { recursive: true });
-        }
-        writeFileSync(storagePath, value);
-      });
+      const dbDir = join(getRepoRoot(), 'db');
+      if (!existsSync(dbDir)) {
+        mkdirSync(dbDir, { recursive: true });
+      }
+      writeFileSync(storagePath, value);
     } catch (error) {
       console.error('Error writing to storage:', error);
     }

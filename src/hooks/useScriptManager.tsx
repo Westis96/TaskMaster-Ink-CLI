@@ -1,5 +1,16 @@
 import { useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+// Get the absolute path to the repository root directory
+const getRepoRoot = () => {
+  // For ESM modules, we need to use this approach to get __dirname
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
+  // Navigate up from src/hooks to the repo root
+  return join(__dirname, '..', '..');
+};
 
 export interface Script {
   id: string;
@@ -61,7 +72,7 @@ export function useScriptManager() {
     import('fs').then(fs => {
       import('path').then(path => {
         // Read only the scripts directory for Python files
-        const scriptsDir = path.join(process.cwd(), 'scripts');
+        const scriptsDir = path.join(getRepoRoot(), 'scripts');
         
         // Ensure the scripts directory exists
         if (!fs.existsSync(scriptsDir)) {
