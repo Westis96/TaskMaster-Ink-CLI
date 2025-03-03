@@ -5,6 +5,43 @@ A beautiful and feature-rich task management application that runs directly in y
 
 ![Task Master Terminal UI](assets/img_terminal.png)
 
+## Installation
+
+### Local Installation (Recommended)
+
+```bash
+# Install dependencies
+npm install
+
+# Build the application
+npm run build
+
+# Create a global symlink to use the 'task' command
+npm link
+
+# Now you can run the application from anywhere using:
+task
+```
+
+The `npm link` command creates a symlink from your global npm bin directory to this project, allowing you to run the application with the `task` command from anywhere in your terminal.
+
+### Development Mode
+
+```bash
+# Run in development mode (build and start)
+npm run dev
+```
+
+<!-- Future option when published to npm:
+### Global Installation from npm
+
+Once published:
+```bash
+npm install -g taskmaster-cli
+task
+```
+-->
+
 ## Features
 
 ✅ **Interactive Task Management**
@@ -25,19 +62,6 @@ A beautiful and feature-rich task management application that runs directly in y
 - Modern, colorful interface with smooth interactions
 - Responsive design that works in different terminal sizes
 - Clear visual indicators and status messages
-
-## Installation
-
-```bash
-# Install dependencies
-npm install
-
-# Build the application
-npm run build
-
-# Start the application
-npm start
-```
 
 ## Usage
 

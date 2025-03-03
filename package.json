@@ -1,14 +1,28 @@
 {
-  "name": "ink-task-manager",
+  "name": "taskmaster-cli",
   "version": "1.0.0",
-  "description": "A cool task manager CLI built with Ink",
-  "main": "index.js",
+  "description": "A beautiful task manager CLI built with React Ink",
+  "main": "dist/app.js",
   "type": "module",
+  "bin": {
+    "task": "./index.js"
+  },
   "scripts": {
     "start": "node index.js",
     "build": "tsc",
-    "dev": "tsc && node index.js"
+    "dev": "tsc && node index.js",
+    "prepublishOnly": "npm run build"
   },
+  "keywords": [
+    "cli",
+    "task-manager",
+    "productivity",
+    "terminal",
+    "ink",
+    "react"
+  ],
+  "author": "",
+  "license": "MIT",
   "dependencies": {
     "chalk": "^5.3.0",
     "figures": "^5.0.0",
