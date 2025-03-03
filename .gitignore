@@ -1,3 +1,3 @@
 dist
 node_modules
-task-storage.json
+db/task-storage.json

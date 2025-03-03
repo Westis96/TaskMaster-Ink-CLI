@@ -38,7 +38,7 @@ interface TaskState {
 const nodeStorage = {
   getItem: (name: string): string | null => {
     try {
-      const storagePath = join(process.cwd(), `${name}.json`);
+      const storagePath = join(process.cwd(), 'db', `${name}.json`);
       
       if (existsSync(storagePath)) {
         return readFileSync(storagePath, 'utf8');
@@ -51,8 +51,14 @@ const nodeStorage = {
   },
   setItem: (name: string, value: string): void => {
     try {
-      const storagePath = join(process.cwd(), `${name}.json`);
-      writeFileSync(storagePath, value);
+      const storagePath = join(process.cwd(), 'db', `${name}.json`);
+      // Ensure the db directory exists
+      import('fs').then(fs => {
+        if (!fs.existsSync(join(process.cwd(), 'db'))) {
+          fs.mkdirSync(join(process.cwd(), 'db'), { recursive: true });
+        }
+        writeFileSync(storagePath, value);
+      });
     } catch (error) {
       console.error('Error writing to storage:', error);
     }

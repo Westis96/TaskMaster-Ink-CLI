@@ -10,7 +10,14 @@ export function useScriptStoreInit() {
   useEffect(() => {
     import('fs').then(fs => {
       import('path').then(path => {
-        // Read the current directory recursively to find Python files
+        // Read only the scripts directory for Python files
+        const scriptsDir = path.join(process.cwd(), 'scripts');
+        
+        // Ensure the scripts directory exists
+        if (!fs.existsSync(scriptsDir)) {
+          fs.mkdirSync(scriptsDir, { recursive: true });
+        }
+        
         const findPythonFiles = (dir: string): Script[] => {
           let results: Script[] = [];
           
@@ -41,12 +48,8 @@ export function useScriptStoreInit() {
           return results;
         };
         
-        try {
-          const pythonScripts = findPythonFiles('.');
-          setScripts(pythonScripts);
-        } catch (error) {
-          console.error('Error finding Python scripts:', error);
-        }
+        // Find scripts and update the store
+        setScripts(findPythonFiles(scriptsDir));
       });
     });
   }, [setScripts]);
