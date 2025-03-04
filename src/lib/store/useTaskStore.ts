@@ -42,6 +42,8 @@ interface TaskState {
   sortByDueDate: () => void;
   sortByCreatedAt: () => void;
   sortTasks: (sortType: SortType) => void;
+  moveTaskUp: () => boolean;
+  moveTaskDown: () => boolean;
 }
 
 // Create file-based storage for Node.js environment
@@ -332,12 +334,12 @@ export const useTaskStore = create<TaskState>()(
         const tasksWithTimestamps = ensureTimestamps(tasks);
 
         const sortedTasks = [...tasksWithTimestamps].sort((a, b) => {
-          // Sort by due date (earliest first)
+          // Sort by due date (latest first)
           if (!a.dueDate && !b.dueDate) return 0;
           if (!a.dueDate) return 1; // Tasks without due dates go last
           if (!b.dueDate) return -1;
           
-          return a.dueDate.getTime() - b.dueDate.getTime();
+          return b.dueDate.getTime() - a.dueDate.getTime(); // Reversed comparison for latest first
         });
 
         set({ tasks: sortedTasks });
@@ -373,6 +375,36 @@ export const useTaskStore = create<TaskState>()(
             get().sortByCreatedAt();
             break;
         }
+      },
+
+      moveTaskUp: () => {
+        const { tasks, selectedIndex } = get();
+        if (tasks.length === 0 || selectedIndex <= 0) return false;
+
+        const updatedTasks = [...tasks];
+        [updatedTasks[selectedIndex], updatedTasks[selectedIndex - 1]] = [updatedTasks[selectedIndex - 1], updatedTasks[selectedIndex]];
+        
+        // Update selectedIndex to follow the moved task
+        set({ 
+          tasks: updatedTasks,
+          selectedIndex: selectedIndex - 1
+        });
+        return true;
+      },
+
+      moveTaskDown: () => {
+        const { tasks, selectedIndex } = get();
+        if (tasks.length === 0 || selectedIndex >= tasks.length - 1) return false;
+
+        const updatedTasks = [...tasks];
+        [updatedTasks[selectedIndex], updatedTasks[selectedIndex + 1]] = [updatedTasks[selectedIndex + 1], updatedTasks[selectedIndex]];
+        
+        // Update selectedIndex to follow the moved task
+        set({ 
+          tasks: updatedTasks,
+          selectedIndex: selectedIndex + 1
+        });
+        return true;
       }
     }),
     {

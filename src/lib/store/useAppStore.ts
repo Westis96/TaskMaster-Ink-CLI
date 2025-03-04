@@ -1,16 +1,18 @@
 import { create } from 'zustand';
 
-export type AppMode = 'list' | 'add' | 'priority' | 'date' | 'scripts' | 'sort' | 'deleteConfirm' | 'edit';
+export type AppMode = 'list' | 'add' | 'priority' | 'date' | 'scripts' | 'sort' | 'deleteConfirm' | 'edit' | 'dnd';
 
 interface AppState {
   mode: AppMode;
   inputValue: string;
   statusMessage: string;
   sortOptionIndex: number;
+  dndOriginalTaskId?: string;
   setMode: (mode: AppMode) => void;
   setInputValue: (value: string) => void;
   setStatus: (message: string, duration?: number) => void;
   setSortOptionIndex: (index: number) => void;
+  setDndOriginalTaskId: (id?: string) => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -18,6 +20,7 @@ export const useAppStore = create<AppState>((set) => ({
   inputValue: '',
   statusMessage: '',
   sortOptionIndex: 0,
+  dndOriginalTaskId: undefined,
 
   setMode: (mode) => set({ mode }),
   
@@ -30,5 +33,7 @@ export const useAppStore = create<AppState>((set) => ({
     }
   },
 
-  setSortOptionIndex: (sortOptionIndex) => set({ sortOptionIndex })
+  setSortOptionIndex: (sortOptionIndex) => set({ sortOptionIndex }),
+  
+  setDndOriginalTaskId: (dndOriginalTaskId) => set({ dndOriginalTaskId })
 })); 

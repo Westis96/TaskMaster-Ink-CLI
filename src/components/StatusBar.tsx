@@ -68,6 +68,14 @@ const StatusBar = ({ tasks, mode, statusMessage }: StatusBarProps) => {
         return <Text backgroundColor="yellow" color="black" bold> PRIORITY MODE </Text>;
       case 'date':
         return <Text backgroundColor="magenta" color="white" bold> DATE MODE </Text>;
+      case 'dnd':
+        return <Text backgroundColor="magenta" color="white" bold> REORDER MODE </Text>;
+      case 'sort':
+        return <Text backgroundColor="cyan" color="black" bold> SORT MODE </Text>;
+      case 'edit':
+        return <Text backgroundColor="green" color="white" bold> EDIT MODE </Text>;
+      case 'deleteConfirm':
+        return <Text backgroundColor="red" color="white" bold> DELETE MODE </Text>;
       default:
         return null;
     }

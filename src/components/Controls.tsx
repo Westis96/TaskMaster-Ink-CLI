@@ -54,6 +54,11 @@ const Controls = () => {
         </Box>
         
         <Box marginRight={3} marginBottom={1}>
+          <Text color="cyan">Tab</Text>
+          <Text> Reorder mode</Text>
+        </Box>
+        
+        <Box marginRight={3} marginBottom={1}>
           <Text color="cyan">x</Text>
           <Text> Delete task</Text>
         </Box>

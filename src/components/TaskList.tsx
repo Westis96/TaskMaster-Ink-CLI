@@ -13,6 +13,7 @@ interface Task {
 interface TaskListProps {
   tasks: Task[];
   selectedIndex: number;
+  isDndMode?: boolean;
 }
 
 const getPriorityColor = (priority?: string) => {
@@ -69,7 +70,7 @@ const formatDate = (date?: Date): string => {
   return `${date.getMonth() + 1}/${date.getDate()}`;
 };
 
-const TaskList = ({ tasks, selectedIndex }: TaskListProps) => {
+const TaskList = ({ tasks, selectedIndex, isDndMode = false }: TaskListProps) => {
   // Calculate which tasks to show based on selectedIndex
   const calculateVisibleRange = () => {
     if (tasks.length <= VISIBLE_TASKS) {
@@ -123,6 +124,9 @@ const TaskList = ({ tasks, selectedIndex }: TaskListProps) => {
           <Box flexDirection="column" height={Math.min(VISIBLE_TASKS, tasks.length)}>
             {visibleTasks.map((task, i) => {
               const actualIndex = startIdx + i;
+              const isSelected = selectedIndex === actualIndex;
+              const isDndSelected = isSelected && isDndMode;
+              
               return (
                 <Box key={task.id} marginY={0.2}>
                   <Box width={3}>
@@ -136,14 +140,15 @@ const TaskList = ({ tasks, selectedIndex }: TaskListProps) => {
                     </Text>
                   </Box>
                   <Box flexGrow={1}>
+                    {isDndSelected && <Box width={2}><Text> </Text></Box>}
                     <Text 
-                      color={selectedIndex === actualIndex ? 'cyan' : undefined}
-                      backgroundColor={selectedIndex === actualIndex ? 'blue' : undefined}
-                      bold={selectedIndex === actualIndex}
+                      color={isSelected ? 'cyan' : undefined}
+                      backgroundColor={isSelected ? (isDndMode ? 'magenta' : 'blue') : undefined}
+                      bold={isSelected}
                       strikethrough={task.completed}
-                      dimColor={task.completed && selectedIndex !== actualIndex}
+                      dimColor={task.completed && !isSelected}
                     >
-                      {selectedIndex === actualIndex ? figures.pointer : ' '} {task.text}
+                      {isSelected ? (isDndMode ? figures.arrowRight : figures.pointer) : ' '} {task.text}
                     </Text>
                   </Box>
                   <Box width={10}>

@@ -41,7 +41,9 @@ const App = () => {
     sortAlphabetically,
     sortByDueDate,
     sortByCreatedAt,
-    sortTasks
+    sortTasks,
+    moveTaskUp,
+    moveTaskDown
   } = useTaskStore(
     useShallow(state => ({
       tasks: state.tasks,
@@ -58,7 +60,9 @@ const App = () => {
       sortAlphabetically: state.sortAlphabetically,
       sortByDueDate: state.sortByDueDate,
       sortByCreatedAt: state.sortByCreatedAt,
-      sortTasks: state.sortTasks
+      sortTasks: state.sortTasks,
+      moveTaskUp: state.moveTaskUp,
+      moveTaskDown: state.moveTaskDown
     }))
   );
 
@@ -94,7 +98,9 @@ const App = () => {
     statusMessage,
     setStatus,
     sortOptionIndex,
-    setSortOptionIndex
+    setSortOptionIndex,
+    dndOriginalTaskId,
+    setDndOriginalTaskId
   } = useAppStore(
     useShallow(state => ({
       mode: state.mode,
@@ -104,7 +110,9 @@ const App = () => {
       setInputValue: state.setInputValue,
       setStatus: state.setStatus,
       sortOptionIndex: state.sortOptionIndex,
-      setSortOptionIndex: state.setSortOptionIndex
+      setSortOptionIndex: state.setSortOptionIndex,
+      dndOriginalTaskId: state.dndOriginalTaskId,
+      setDndOriginalTaskId: state.setDndOriginalTaskId
     }))
   );
 
@@ -179,8 +187,55 @@ const App = () => {
         setStatus('Sort mode: Use arrow keys to select sort type');
       }
       
+      if (key.tab && tasks.length > 0) {
+        setDndOriginalTaskId(tasks[taskIndex]?.id);
+        setMode('dnd');
+        setStatus('DnD mode: Use arrow keys to move task, Enter/Tab to apply, Esc to cancel');
+      }
+      
       if (key.escape) {
         process.exit(0);
+      }
+    } else if (mode === 'dnd') {
+      if (key.upArrow) {
+        const moved = moveTaskUp();
+        if (moved) {
+          setStatus('Task moved up');
+        }
+      }
+      
+      if (key.downArrow) {
+        const moved = moveTaskDown();
+        if (moved) {
+          setStatus('Task moved down');
+        }
+      }
+      
+      if (key.return || key.tab) {
+        setMode('list');
+        setDndOriginalTaskId(undefined);
+        setStatus('Task reordering applied');
+      }
+      
+      if (key.escape) {
+        // Reload tasks to undo changes
+        useTaskStore.persist.rehydrate();
+        
+        // After rehydration, find the original task by ID and set that as the selected index
+        // We need to do this in the next tick to allow rehydration to complete
+        setTimeout(() => {
+          const rehydratedTasks = useTaskStore.getState().tasks;
+          if (dndOriginalTaskId) {
+            const originalTaskIndex = rehydratedTasks.findIndex(task => task.id === dndOriginalTaskId);
+            if (originalTaskIndex !== -1) {
+              useTaskStore.setState({ selectedIndex: originalTaskIndex });
+            }
+          }
+        }, 0);
+        
+        setMode('list');
+        setDndOriginalTaskId(undefined);
+        setStatus('Task reordering cancelled');
       }
     } else if (mode === 'deleteConfirm') {
       if (input === 'y' || input === 'Y') {
@@ -351,6 +406,8 @@ const App = () => {
         return <SortMode selectedIndex={sortOptionIndex} />;
       case 'deleteConfirm':
         return <DeleteConfirmMode task={tasks[taskIndex]} />;
+      case 'dnd':
+        return <TaskList tasks={tasks} selectedIndex={taskIndex} isDndMode={true} />;
       default:
         return <TaskList tasks={tasks} selectedIndex={taskIndex} />;
     }
